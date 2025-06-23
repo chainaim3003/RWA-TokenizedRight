@@ -1,0 +1,23 @@
+{
+  "Policy": "Blank Policy Template",
+  "PolicyType": "open",
+  "ForeignCalls": [
+    {
+      "name": "exampleFunction",
+      "address": "0x0000000000000000000000000000000000000000",
+      "function": "exampleFunction(address)",
+      "returnType": "bool",
+      "valuesToPass": "0"
+    }
+  ],
+  "Trackers": [],
+  "Rules": [
+    {
+      "condition": "FC:exampleFunction == true",
+      "positiveEffects": [],
+      "negativeEffects": ["revert(\"Example rule failed\")"],
+      "callingFunction": "exampleFunction(address user)",
+      "encodedValues": "address user"
+    }
+  ]
+}

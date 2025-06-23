@@ -1,0 +1,14 @@
+[profile.default]
+src = "src"
+out = "out"
+libs = ["lib"]
+script = "script"
+test = "test"
+cache_path = "cache"
+broadcast = "broadcast"
+remappings = [
+    "@openzeppelin/contracts/=node_modules/@openzeppelin/contracts",
+    "@thrackle-io/forte-rules-engine/=node_modules/@thrackle-io/forte-rules-engine"
+]
+
+# See more config options https://github.com/foundry-rs/foundry/blob/master/crates/config/README.md#all-options

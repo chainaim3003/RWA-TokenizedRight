@@ -1,0 +1,23 @@
+{
+  "Policy": "OFAC Deny Policy",
+  "PolicyType": "open",
+  "ForeignCalls": [
+    {
+      "name": "isDenied",
+      "address": "0xc6e7DF5E7b4f2A278906862b61205850344D4e7d",
+      "function": "isDenied(address)",
+      "returnType": "bool",
+      "valuesToPass": "0"
+    }
+  ],
+  "Trackers": [],
+  "Rules": [
+    {
+      "condition": "FC:isDenied == false",
+      "positiveEffects": [],
+      "negativeEffects": ["revert(\"Address is on OFAC Deny List\")"],
+      "callingFunction": "_update(address to, uint256 tokenId, address auth)",
+      "encodedValues": "address to, uint256 tokenId"
+    }
+  ]
+}

@@ -1,0 +1,205 @@
+{
+  "Policy": "Institutional RWA Complete Compliance",
+  "PolicyType": "open",
+  "ForeignCalls": [
+    {
+      "name": "getKycLevel",
+      "address": "COMPLIANCE_MOCK_ADDRESS",
+      "function": "getKycLevel(address)",
+      "returnType": "uint256",
+      "valuesToPass": "0"
+    },
+    {
+      "name": "isOFACSanctioned",
+      "address": "COMPLIANCE_MOCK_ADDRESS",
+      "function": "isOFACSanctioned(address)",
+      "returnType": "bool",
+      "valuesToPass": "0"
+    },
+    {
+      "name": "isCrossBorderSanctioned",
+      "address": "COMPLIANCE_MOCK_ADDRESS",
+      "function": "isCrossBorderSanctioned(address,address)",
+      "returnType": "bool",
+      "valuesToPass": "0,1"
+    },
+    {
+      "name": "verifyGLEIF",
+      "address": "COMPLIANCE_MOCK_ADDRESS",
+      "function": "verifyGLEIF(string,string)",
+      "returnType": "bool",
+      "valuesToPass": "4,5"
+    },
+    {
+      "name": "verifyBPMNCompliance",
+      "address": "COMPLIANCE_MOCK_ADDRESS",
+      "function": "verifyBPMNCompliance(string)",
+      "returnType": "uint256",
+      "valuesToPass": "3"
+    },
+    {
+      "name": "getACTUSRiskScore",
+      "address": "COMPLIANCE_MOCK_ADDRESS",
+      "function": "getACTUSRiskScore(uint256,string)",
+      "returnType": "uint256",
+      "valuesToPass": "2,3"
+    },
+    {
+      "name": "verifyDCSADocuments",
+      "address": "COMPLIANCE_MOCK_ADDRESS",
+      "function": "verifyDCSADocuments(bytes32)",
+      "returnType": "bool",
+      "valuesToPass": "0"
+    },
+    {
+      "name": "calculateOptimalFractions",
+      "address": "COMPLIANCE_MOCK_ADDRESS",
+      "function": "calculateOptimalFractions(uint256,string)",
+      "returnType": "uint256",
+      "valuesToPass": "2,3"
+    },
+    {
+      "name": "getMetadataScore",
+      "address": "COMPLIANCE_MOCK_ADDRESS",
+      "function": "getMetadataScore(uint256,string,string)",
+      "returnType": "uint256",
+      "valuesToPass": "2,3,4"
+    },
+    {
+      "name": "getMinimumFractionThreshold",
+      "address": "COMPLIANCE_MOCK_ADDRESS",
+      "function": "getMinimumFractionThreshold(string)",
+      "returnType": "uint256",
+      "valuesToPass": "3"
+    },
+    {
+      "name": "getLiquidityScore",
+      "address": "COMPLIANCE_MOCK_ADDRESS",
+      "function": "getLiquidityScore(uint256,string)",
+      "returnType": "uint256",
+      "valuesToPass": "1,3"
+    },
+    {
+      "name": "getAssetTypeThreshold",
+      "address": "COMPLIANCE_MOCK_ADDRESS",
+      "function": "getAssetTypeThreshold(string,uint256)",
+      "returnType": "uint256",
+      "valuesToPass": "3,2"
+    },
+    {
+      "name": "checkPYUSDPegStability",
+      "address": "COMPLIANCE_MOCK_ADDRESS",
+      "function": "checkPYUSDPegStability(uint256)",
+      "returnType": "bool",
+      "valuesToPass": "2"
+    },
+    {
+      "name": "validateCrossBorderPYUSD",
+      "address": "COMPLIANCE_MOCK_ADDRESS",
+      "function": "validateCrossBorderPYUSD(string,string,uint256)",
+      "returnType": "bool",
+      "valuesToPass": "3,4,2"
+    }
+  ],
+  "Trackers": [],
+  "Rules": [
+    {
+      "condition": "FC:getKycLevel >= 3",
+      "positiveEffects": [],
+      "negativeEffects": ["revert(\"RULE_01: Enhanced KYC verification failed - insufficient KYC level\")"],
+      "callingFunction": "mintInstitutionalAsset(address recipient, uint256 amount, uint256 principalAmount, string assetType, string lei, string corporateName)",
+      "encodedValues": "address recipient, uint256 amount, uint256 principalAmount, string assetType, string lei, string corporateName"
+    },
+    {
+      "condition": "FC:isOFACSanctioned == false",
+      "positiveEffects": [],
+      "negativeEffects": ["revert(\"RULE_02: Enhanced OFAC check failed - recipient on sanctions list\")"],
+      "callingFunction": "mintInstitutionalAsset(address recipient, uint256 amount, uint256 principalAmount, string assetType, string lei, string corporateName)",
+      "encodedValues": "address recipient, uint256 amount, uint256 principalAmount, string assetType, string lei, string corporateName"
+    },
+    {
+      "condition": "FC:isCrossBorderSanctioned == false",
+      "positiveEffects": [],
+      "negativeEffects": ["revert(\"RULE_03: Cross-border sanctions check failed\")"],
+      "callingFunction": "mintInstitutionalAsset(address recipient, uint256 amount, uint256 principalAmount, string assetType, string lei, string corporateName)",
+      "encodedValues": "address recipient, uint256 amount, uint256 principalAmount, string assetType, string lei, string corporateName"
+    },
+    {
+      "condition": "FC:verifyGLEIF == true",
+      "positiveEffects": [],
+      "negativeEffects": ["revert(\"RULE_04: GLEIF verification failed - invalid LEI or corporate name\")"],
+      "callingFunction": "mintInstitutionalAsset(address recipient, uint256 amount, uint256 principalAmount, string assetType, string lei, string corporateName)",
+      "encodedValues": "address recipient, uint256 amount, uint256 principalAmount, string assetType, string lei, string corporateName"
+    },
+    {
+      "condition": "FC:verifyBPMNCompliance >= 80",
+      "positiveEffects": [],
+      "negativeEffects": ["revert(\"RULE_05: BPMN business process compliance failed - score below 80\")"],
+      "callingFunction": "mintInstitutionalAsset(address recipient, uint256 amount, uint256 principalAmount, string assetType, string lei, string corporateName)",
+      "encodedValues": "address recipient, uint256 amount, uint256 principalAmount, string assetType, string lei, string corporateName"
+    },
+    {
+      "condition": "FC:getACTUSRiskScore <= 500",
+      "positiveEffects": [],
+      "negativeEffects": ["revert(\"RULE_06: ACTUS risk assessment failed - risk score exceeds 500\")"],
+      "callingFunction": "mintInstitutionalAsset(address recipient, uint256 amount, uint256 principalAmount, string assetType, string lei, string corporateName)",
+      "encodedValues": "address recipient, uint256 amount, uint256 principalAmount, string assetType, string lei, string corporateName"
+    },
+    {
+      "condition": "FC:verifyDCSADocuments == true",
+      "positiveEffects": [],
+      "negativeEffects": ["revert(\"RULE_07: DCSA trade document verification failed\")"],
+      "callingFunction": "mintInstitutionalAsset(address recipient, uint256 amount, uint256 principalAmount, string assetType, string lei, string corporateName)",
+      "encodedValues": "address recipient, uint256 amount, uint256 principalAmount, string assetType, string lei, string corporateName"
+    },
+    {
+      "condition": "FC:calculateOptimalFractions >= 10 && FC:calculateOptimalFractions <= 10000",
+      "positiveEffects": [],
+      "negativeEffects": ["revert(\"RULE_08: Optimal fraction calculation failed - count outside range 10-10000\")"],
+      "callingFunction": "mintInstitutionalAsset(address recipient, uint256 amount, uint256 principalAmount, string assetType, string lei, string corporateName)",
+      "encodedValues": "address recipient, uint256 amount, uint256 principalAmount, string assetType, string lei, string corporateName"
+    },
+    {
+      "condition": "FC:getMetadataScore >= 70",
+      "positiveEffects": [],
+      "negativeEffects": ["revert(\"RULE_09: Metadata completeness score below 70 - insufficient asset documentation\")"],
+      "callingFunction": "mintInstitutionalAsset(address recipient, uint256 amount, uint256 principalAmount, string assetType, string lei, string corporateName)",
+      "encodedValues": "address recipient, uint256 amount, uint256 principalAmount, string assetType, string lei, string corporateName"
+    },
+    {
+      "condition": "amount >= FC:getMinimumFractionThreshold",
+      "positiveEffects": [],
+      "negativeEffects": ["revert(\"RULE_10: Transfer amount below minimum fraction threshold\")"],
+      "callingFunction": "mintInstitutionalAsset(address recipient, uint256 amount, uint256 principalAmount, string assetType, string lei, string corporateName)",
+      "encodedValues": "address recipient, uint256 amount, uint256 principalAmount, string assetType, string lei, string corporateName"
+    },
+    {
+      "condition": "FC:getLiquidityScore >= 100",
+      "positiveEffects": [],
+      "negativeEffects": ["revert(\"RULE_11: Fraction liquidity optimization warning - score below 100\")"],
+      "callingFunction": "mintInstitutionalAsset(address recipient, uint256 amount, uint256 principalAmount, string assetType, string lei, string corporateName)",
+      "encodedValues": "address recipient, uint256 amount, uint256 principalAmount, string assetType, string lei, string corporateName"
+    },
+    {
+      "condition": "FC:getMetadataScore >= FC:getAssetTypeThreshold",
+      "positiveEffects": [],
+      "negativeEffects": ["revert(\"RULE_12: Enhanced metadata enforcement - score below asset-specific threshold\")"],
+      "callingFunction": "mintInstitutionalAsset(address recipient, uint256 amount, uint256 principalAmount, string assetType, string lei, string corporateName)",
+      "encodedValues": "address recipient, uint256 amount, uint256 principalAmount, string assetType, string lei, string corporateName"
+    },
+    {
+      "condition": "FC:checkPYUSDPegStability == true",
+      "positiveEffects": [],
+      "negativeEffects": ["revert(\"RULE_13: PYUSD peg stability check failed - price outside acceptable range\")"],
+      "callingFunction": "mintInstitutionalAssetPYUSD(address recipient, uint256 amount, uint256 pyusdAmount, string buyerCountry, string sellerCountry)",
+      "encodedValues": "address recipient, uint256 amount, uint256 pyusdAmount, string buyerCountry, string sellerCountry"
+    },
+    {
+      "condition": "FC:validateCrossBorderPYUSD == true",
+      "positiveEffects": [],
+      "negativeEffects": ["revert(\"RULE_14: Cross-border PYUSD compliance failed - transaction violates regulations\")"],
+      "callingFunction": "mintInstitutionalAssetPYUSD(address recipient, uint256 amount, uint256 pyusdAmount, string buyerCountry, string sellerCountry)",
+      "encodedValues": "address recipient, uint256 amount, uint256 pyusdAmount, string buyerCountry, string sellerCountry"
+    }
+  ]
+}

@@ -1,0 +1,23 @@
+{
+  "Policy": "AMM Policy",
+  "ForeignCalls": [
+    {
+      "name": "isDenied(addr)",
+      "address": "0x0ca356125687237bC1FB547a3BCb2F6b73d0093f",
+      "signature": "isDenied(address)",
+      "returnType": "bool",
+      "parameterTypes": "address",
+      "encodedIndices": "1"
+    }
+  ],
+  "Trackers": [],
+  "RulesJSON": [
+    {
+      "condition": "isDenied(addr) == false",
+      "positiveEffects": [],
+      "negativeEffects": ["revert(\"Address is on OFAC Deny List\")"],
+      "functionSignature": "_update(address from, address to, uint256 amount)",
+      "encodedValues": "address from, address to, uint256 amount"
+    }
+  ]
+}

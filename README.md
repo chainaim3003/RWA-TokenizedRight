@@ -12,6 +12,14 @@ Built on the proven [rwa-demo](https://github.com/dmulvi/rwa-demo) foundation wi
 - **PYUSD Cross-Border** - Rules 13-14 for international PYUSD compliance
 - **Proper Architecture** - Extends RulesEngineClient with auto-generated modifiers
 - **Reference Implementation** - Includes original rwa-demo contracts for learning
+## VIDEO 
+
+https://youtu.be/U7frikQbJ-Y
+
+
+## PRESENTATION 
+
+https://drive.google.com/drive/folders/1bgBeHUKHTUS1pYdf3_DHhKMqZwM5Pz3S?usp=sharing
 
 ## 📁 Project Structure
 

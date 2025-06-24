@@ -1,0 +1,84 @@
+{
+  "policyName": "Hackathon Demo - Institutional RWA Compliance",
+  "description": "Simplified institutional policy for hackathon demonstration",
+  "version": "1.0.0",
+  "rules": [
+    {
+      "id": "DEMO_RULE_01",
+      "name": "KYC Level Enforcement",
+      "description": "Verify minimum KYC level 3 for institutional trading",
+      "contractAddress": "{{MODIFIED_PRET_ADDRESS}}",
+      "functionName": "getKycLevel",
+      "parameters": [
+        {
+          "name": "user",
+          "type": "address",
+          "description": "User address to check KYC level"
+        }
+      ],
+      "returnType": "uint256",
+      "conditions": [
+        {
+          "operator": ">=",
+          "value": "3"
+        }
+      ],
+      "enabled": true,
+      "priority": 1
+    },
+    {
+      "id": "DEMO_RULE_02", 
+      "name": "OFAC Sanctions Blocking",
+      "description": "Block transactions from OFAC sanctioned addresses",
+      "contractAddress": "{{MODIFIED_PRET_ADDRESS}}",
+      "functionName": "isOFACSanctioned",
+      "parameters": [
+        {
+          "name": "user",
+          "type": "address",
+          "description": "User address to check sanctions"
+        }
+      ],
+      "returnType": "bool",
+      "conditions": [
+        {
+          "operator": "==",
+          "value": "false"
+        }
+      ],
+      "enabled": true,
+      "priority": 1
+    },
+    {
+      "id": "DEMO_RULE_03",
+      "name": "Minimum Investment Threshold",
+      "description": "Enforce minimum investment amounts for institutional assets",
+      "contractAddress": "{{MODIFIED_PRET_ADDRESS}}",
+      "functionName": "getMinimumFractionThreshold",
+      "parameters": [
+        {
+          "name": "assetType",
+          "type": "uint256",
+          "description": "Asset type (1=TREASURY, 2=CORPORATE, 3=MUNICIPAL)"
+        }
+      ],
+      "returnType": "uint256",
+      "conditions": [
+        {
+          "operator": ">",
+          "value": "1000"
+        }
+      ],
+      "enabled": true,
+      "priority": 2
+    }
+  ],
+  "metadata": {
+    "createdAt": "2025-06-23",
+    "blockchain": "ethereum",
+    "compliance": ["KYC", "AML", "OFAC"],
+    "demo": true,
+    "totalRules": 3,
+    "forHackathon": true
+  }
+}

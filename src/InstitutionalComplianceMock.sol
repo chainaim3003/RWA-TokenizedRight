@@ -32,7 +32,7 @@ contract InstitutionalComplianceMock {
     constructor() {
         // Setup initial KYC levels for testing
         kycLevels[0x70997970C51812dc3A010C7d01b50e0d17dc79C8] = 4; // High KYC
-        kycLevels[0x3C44CdDdB6a900fa2b585dd299e07d12A1F38Fa9] = 2; // Low KYC (will fail)
+        kycLevels[0x3c44CdDDb6a900FA2b585dD299E07d12A1F38Fa9] = 2; // Low KYC (will fail)
         kycLevels[0x90F79bf6EB2c4f870365E785982E1f101E93b906] = 5; // Very high KYC
         
         // Setup OFAC sanctions for testing

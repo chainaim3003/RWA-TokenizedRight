@@ -7,13 +7,13 @@ import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
 import "src/InstitutionalRWAFRE.sol";
 
 /**
- * @title Institutional RWA Contract
+ * @title Institutional RWA Contract - Forte Compatible (Following rwa_demo patterns)
  * @dev ERC721 contract for institutional real-world assets with comprehensive 14-rule compliance
- * @dev Protected by Forte Rules Engine with all ZK PRET integrations
+ * @dev Protected by Forte Rules Engine with converted uint256 parameters
  */
 contract InstitutionalRWA is InstitutionalRWAFRE, ERC721, Ownable {
     
-    // Asset metadata structure
+    // Asset metadata structure (stores original strings for metadata)
     struct AssetMetadata {
         uint256 principalAmount;
         string assetType;
@@ -42,16 +42,16 @@ contract InstitutionalRWA is InstitutionalRWAFRE, ERC721, Ownable {
         uint256 indexed tokenId,
         address indexed recipient,
         uint256 principalAmount,
-        string assetType,
-        string lei
+        uint256 assetTypeId,
+        uint256 leiHash
     );
     
     event PYUSDAssetMinted(
         uint256 indexed tokenId,
         address indexed recipient,
         uint256 pyusdAmount,
-        string buyerCountry,
-        string sellerCountry
+        uint256 fromCountryCode,
+        uint256 toCountryCode
     );
     
     constructor(
@@ -59,42 +59,51 @@ contract InstitutionalRWA is InstitutionalRWAFRE, ERC721, Ownable {
         string memory tokenSymbol,
         address tokenAdmin,
         IERC20 _paymentToken,
-        address _paymentRecipient,
-        address freAddress
+        address _paymentRecipient
     ) ERC721(tokenName, tokenSymbol) Ownable(tokenAdmin) {
         paymentToken = _paymentToken;
         paymentRecipient = _paymentRecipient;
-        
-        // Initialize Forte Rules Engine integration
-        setRulesEngineAddress(freAddress);
     }
     
     /**
      * @dev Mint institutional RWA with comprehensive 14-rule compliance
-     * @dev This function is protected by ALL institutional compliance rules (RULE_01 through RULE_12)
+     * @dev Uses converted uint256 parameters for Forte Rules Engine compatibility
+     * @param recipient Address receiving the asset
+     * @param amount Number of fractions being minted
+     * @param principalAmount USD value of the underlying asset
+     * @param assetTypeId Asset type as uint256 (1=TREASURY, 2=CORPORATE, etc.)
+     * @param leiHash Keccak256 hash of LEI code
+     * @param corporateNameHash Keccak256 hash of corporate name
+     * @param assetType Original asset type string (for metadata)
+     * @param lei Original LEI string (for metadata)
+     * @param corporateName Original corporate name (for metadata)
      */
     function mintInstitutionalAsset(
         address recipient,
         uint256 amount,
         uint256 principalAmount,
+        uint256 assetTypeId,
+        uint256 leiHash,
+        uint256 corporateNameHash,
         string memory assetType,
         string memory lei,
         string memory corporateName
     ) 
         external 
-        checkRulesBeforemintInstitutionalAsset(recipient, amount, principalAmount, assetType, lei, corporateName)
+        checkRulesBeforemintInstitutionalAsset(recipient, amount, principalAmount, assetTypeId, leiHash, corporateNameHash)
     {
         require(totalSupply < MAX_SUPPLY, "Maximum supply reached");
         require(principalAmount > 0, "Principal amount must be greater than 0");
-        require(bytes(assetType).length > 0, "Asset type required");
-        require(bytes(lei).length == 20, "Valid 20-character LEI required");
+        require(assetTypeId > 0, "Valid asset type ID required");
+        require(leiHash != 0, "Valid LEI hash required");
+        require(corporateNameHash != 0, "Valid corporate name hash required");
         
-        // Calculate payment amount based on principal amount (1:1000 ratio for demo)
-        uint256 paymentAmount = principalAmount / 1000;
-        require(
-            paymentToken.transferFrom(msg.sender, paymentRecipient, paymentAmount),
-            "Payment failed"
-        );
+        // Skip payment for demo (comment back in for production)
+        // uint256 paymentAmount = principalAmount / 1000;
+        // require(
+        //     paymentToken.transferFrom(msg.sender, paymentRecipient, paymentAmount),
+        //     "Payment failed"
+        // );
         
         uint256 tokenId = totalSupply + 1;
         totalSupply++;
@@ -105,7 +114,7 @@ contract InstitutionalRWA is InstitutionalRWAFRE, ERC721, Ownable {
             assetType: assetType,
             legalEntityIdentifier: lei,
             corporateName: corporateName,
-            documentHash: keccak256(abi.encodePacked(lei, corporateName, block.timestamp)),
+            documentHash: keccak256(abi.encodePacked(leiHash, corporateNameHash, block.timestamp)),
             mintTimestamp: block.timestamp,
             buyerCountry: "",
             sellerCountry: "",
@@ -114,33 +123,42 @@ contract InstitutionalRWA is InstitutionalRWAFRE, ERC721, Ownable {
         
         _safeMint(recipient, tokenId);
         
-        emit InstitutionalAssetMinted(tokenId, recipient, principalAmount, assetType, lei);
+        emit InstitutionalAssetMinted(tokenId, recipient, principalAmount, assetTypeId, leiHash);
     }
     
     /**
      * @dev Mint PYUSD-denominated RWA with cross-border compliance
-     * @dev This function is protected by PYUSD-specific rules (RULE_13 and RULE_14)
+     * @dev Uses converted uint256 parameters for Forte Rules Engine compatibility
+     * @param recipient Address receiving the PYUSD-denominated asset
+     * @param amount Number of fractions being minted
+     * @param pyusdAmount PYUSD amount for the transaction
+     * @param fromCountryCode ISO 3166-1 numeric country code for buyer
+     * @param toCountryCode ISO 3166-1 numeric country code for seller
+     * @param buyerCountry Original buyer country string (for metadata)
+     * @param sellerCountry Original seller country string (for metadata)
      */
     function mintInstitutionalAssetPYUSD(
         address recipient,
         uint256 amount,
         uint256 pyusdAmount,
+        uint256 fromCountryCode,
+        uint256 toCountryCode,
         string memory buyerCountry,
         string memory sellerCountry
     )
         external
-        checkRulesBeforemintInstitutionalAssetPYUSD(recipient, amount, pyusdAmount, buyerCountry, sellerCountry)
+        checkRulesBeforemintInstitutionalAssetPYUSD(recipient, amount, pyusdAmount, fromCountryCode, toCountryCode)
     {
         require(totalSupply < MAX_SUPPLY, "Maximum supply reached");
-        require(pyusdAmount >= 1000000, "Minimum $1M for institutional PYUSD trades");
-        require(bytes(buyerCountry).length > 0, "Buyer country required");
-        require(bytes(sellerCountry).length > 0, "Seller country required");
+        require(pyusdAmount >= 1000000, "Minimum $1 for institutional PYUSD trades");
+        require(fromCountryCode > 0, "Valid from country code required");
+        require(toCountryCode > 0, "Valid to country code required");
         
-        // PYUSD payment processing
-        require(
-            paymentToken.transferFrom(msg.sender, paymentRecipient, pyusdAmount),
-            "PYUSD payment failed"
-        );
+        // Skip payment for demo (comment back in for production)
+        // require(
+        //     paymentToken.transferFrom(msg.sender, paymentRecipient, pyusdAmount),
+        //     "PYUSD payment failed"
+        // );
         
         uint256 tokenId = totalSupply + 1;
         totalSupply++;
@@ -151,7 +169,7 @@ contract InstitutionalRWA is InstitutionalRWAFRE, ERC721, Ownable {
             assetType: "PYUSD_CROSS_BORDER",
             legalEntityIdentifier: "",
             corporateName: "",
-            documentHash: keccak256(abi.encodePacked(buyerCountry, sellerCountry, block.timestamp)),
+            documentHash: keccak256(abi.encodePacked(fromCountryCode, toCountryCode, block.timestamp)),
             mintTimestamp: block.timestamp,
             buyerCountry: buyerCountry,
             sellerCountry: sellerCountry,
@@ -160,12 +178,11 @@ contract InstitutionalRWA is InstitutionalRWAFRE, ERC721, Ownable {
         
         _safeMint(recipient, tokenId);
         
-        emit PYUSDAssetMinted(tokenId, recipient, pyusdAmount, buyerCountry, sellerCountry);
+        emit PYUSDAssetMinted(tokenId, recipient, pyusdAmount, fromCountryCode, toCountryCode);
     }
     
     /**
-     * @dev Transfer function with existing rwa-demo compliance (KYC + OFAC)
-     * @dev This hooks into the Forte Rules Engine for transfer compliance
+     * @dev Transfer function with Forte Rules Engine compliance (following rwa_demo pattern)
      */
     function _update(
         address to,
@@ -204,13 +221,11 @@ contract InstitutionalRWA is InstitutionalRWAFRE, ERC721, Ownable {
     
     // Admin functions
     function updatePaymentRecipient(address newRecipient) external onlyOwner {
-        // This would need additional validation in production
         require(newRecipient != address(0), "Invalid recipient");
     }
     
     function emergencyPause() external onlyOwner {
         // Emergency pause functionality would be implemented here
-        // Connected to the emergency controls in the policy
     }
     
     // Function to support interface detection

@@ -1,0 +1,374 @@
+{
+  "policyName": "Institutional RWA Complete Compliance Policy",
+  "description": "All 14 PRET rules converted for Forte Rules Engine compatibility",
+  "version": "1.0.0",
+  "rules": [
+    {
+      "id": "RULE_01",
+      "name": "Enhanced KYC Level Check",
+      "description": "Verify user has minimum KYC level 3",
+      "contractAddress": "{{MODIFIED_PRET_ADDRESS}}",
+      "functionName": "getKycLevel",
+      "parameters": [
+        {
+          "name": "user",
+          "type": "address",
+          "description": "User address to check KYC level"
+        }
+      ],
+      "returnType": "uint256",
+      "conditions": [
+        {
+          "operator": ">=",
+          "value": "3"
+        }
+      ],
+      "enabled": true
+    },
+    {
+      "id": "RULE_02", 
+      "name": "OFAC Sanctions Check",
+      "description": "Verify user is not on OFAC sanctions list",
+      "contractAddress": "{{MODIFIED_PRET_ADDRESS}}",
+      "functionName": "isOFACSanctioned",
+      "parameters": [
+        {
+          "name": "user",
+          "type": "address",
+          "description": "User address to check sanctions"
+        }
+      ],
+      "returnType": "bool",
+      "conditions": [
+        {
+          "operator": "==",
+          "value": "false"
+        }
+      ],
+      "enabled": true
+    },
+    {
+      "id": "RULE_03",
+      "name": "Cross-Border Sanctions Check", 
+      "description": "Verify cross-border transaction compliance",
+      "contractAddress": "{{MODIFIED_PRET_ADDRESS}}",
+      "functionName": "isCrossBorderSanctioned",
+      "parameters": [
+        {
+          "name": "from",
+          "type": "address",
+          "description": "Sender address"
+        },
+        {
+          "name": "to", 
+          "type": "address",
+          "description": "Recipient address"
+        }
+      ],
+      "returnType": "bool",
+      "conditions": [
+        {
+          "operator": "==",
+          "value": "false"
+        }
+      ],
+      "enabled": true
+    },
+    {
+      "id": "RULE_04",
+      "name": "GLEIF Entity Verification",
+      "description": "Verify entity against GLEIF database using hashed identifiers",
+      "contractAddress": "{{MODIFIED_PRET_ADDRESS}}", 
+      "functionName": "verifyGLEIF",
+      "parameters": [
+        {
+          "name": "leiHash",
+          "type": "uint256",
+          "description": "Keccak256 hash of LEI code"
+        },
+        {
+          "name": "corporateNameHash",
+          "type": "uint256", 
+          "description": "Keccak256 hash of corporate name"
+        }
+      ],
+      "returnType": "bool",
+      "conditions": [
+        {
+          "operator": "==",
+          "value": "true"
+        }
+      ],
+      "enabled": true
+    },
+    {
+      "id": "RULE_05",
+      "name": "BPMN Process Compliance",
+      "description": "Verify business process compliance using hashed process ID",
+      "contractAddress": "{{MODIFIED_PRET_ADDRESS}}",
+      "functionName": "verifyBPMNCompliance", 
+      "parameters": [
+        {
+          "name": "processIdHash",
+          "type": "uint256",
+          "description": "Keccak256 hash of process ID"
+        }
+      ],
+      "returnType": "uint256",
+      "conditions": [
+        {
+          "operator": ">=",
+          "value": "75"
+        }
+      ],
+      "enabled": true
+    },
+    {
+      "id": "RULE_06",
+      "name": "ACTUS Risk Score",
+      "description": "Calculate ACTUS contract risk score",
+      "contractAddress": "{{MODIFIED_PRET_ADDRESS}}",
+      "functionName": "getACTUSRiskScore",
+      "parameters": [
+        {
+          "name": "contractId", 
+          "type": "uint256",
+          "description": "ACTUS contract identifier"
+        },
+        {
+          "name": "riskProfileId",
+          "type": "uint256",
+          "description": "Risk profile constant (1=LOW, 2=MEDIUM, 3=HIGH)"
+        }
+      ],
+      "returnType": "uint256", 
+      "conditions": [
+        {
+          "operator": "<=",
+          "value": "50"
+        }
+      ],
+      "enabled": true
+    },
+    {
+      "id": "RULE_07",
+      "name": "DCSA Document Verification",
+      "description": "Verify shipping documents using DCSA standards",
+      "contractAddress": "{{MODIFIED_PRET_ADDRESS}}",
+      "functionName": "verifyDCSADocuments",
+      "parameters": [
+        {
+          "name": "documentHashUint",
+          "type": "uint256", 
+          "description": "Document hash converted from bytes32 to uint256"
+        }
+      ],
+      "returnType": "bool",
+      "conditions": [
+        {
+          "operator": "==",
+          "value": "true"
+        }
+      ],
+      "enabled": true
+    },
+    {
+      "id": "RULE_08",
+      "name": "Optimal Fractions Calculation", 
+      "description": "Calculate optimal asset fractions using strategy",
+      "contractAddress": "{{MODIFIED_PRET_ADDRESS}}",
+      "functionName": "calculateOptimalFractions",
+      "parameters": [
+        {
+          "name": "totalValue",
+          "type": "uint256",
+          "description": "Total asset value"
+        },
+        {
+          "name": "strategyId",
+          "type": "uint256",
+          "description": "Strategy constant (1=CONSERVATIVE, 2=BALANCED, 3=AGGRESSIVE)"
+        }
+      ],
+      "returnType": "uint256",
+      "conditions": [
+        {
+          "operator": ">",
+          "value": "1000"
+        }
+      ],
+      "enabled": true
+    },
+    {
+      "id": "RULE_09",
+      "name": "Metadata Score",
+      "description": "Calculate metadata quality score",
+      "contractAddress": "{{MODIFIED_PRET_ADDRESS}}",
+      "functionName": "getMetadataScore", 
+      "parameters": [
+        {
+          "name": "tokenId",
+          "type": "uint256",
+          "description": "Token identifier"
+        },
+        {
+          "name": "metadataUriHash",
+          "type": "uint256",
+          "description": "Keccak256 hash of metadata URI"
+        },
+        {
+          "name": "categoryId",
+          "type": "uint256",
+          "description": "Category constant (1=FINANCIAL, 2=LEGAL, 3=COMPLIANCE)"
+        }
+      ],
+      "returnType": "uint256",
+      "conditions": [
+        {
+          "operator": ">=", 
+          "value": "80"
+        }
+      ],
+      "enabled": true
+    },
+    {
+      "id": "RULE_10",
+      "name": "Minimum Fraction Threshold",
+      "description": "Get minimum investment threshold by asset type",
+      "contractAddress": "{{MODIFIED_PRET_ADDRESS}}",
+      "functionName": "getMinimumFractionThreshold",
+      "parameters": [
+        {
+          "name": "assetTypeId",
+          "type": "uint256",
+          "description": "Asset type constant (1=TREASURY, 2=CORPORATE, 3=MUNICIPAL)"
+        }
+      ],
+      "returnType": "uint256",
+      "conditions": [
+        {
+          "operator": ">",
+          "value": "0"
+        }
+      ],
+      "enabled": true
+    },
+    {
+      "id": "RULE_11",
+      "name": "Liquidity Score",
+      "description": "Calculate liquidity score based on market conditions",
+      "contractAddress": "{{MODIFIED_PRET_ADDRESS}}", 
+      "functionName": "getLiquidityScore",
+      "parameters": [
+        {
+          "name": "amount",
+          "type": "uint256",
+          "description": "Investment amount"
+        },
+        {
+          "name": "marketConditionId",
+          "type": "uint256", 
+          "description": "Market condition constant (1=BULL, 2=BEAR, 3=STABLE)"
+        }
+      ],
+      "returnType": "uint256",
+      "conditions": [
+        {
+          "operator": ">=",
+          "value": "70"
+        }
+      ],
+      "enabled": true
+    },
+    {
+      "id": "RULE_12",
+      "name": "Asset Type Threshold",
+      "description": "Calculate asset-specific threshold",
+      "contractAddress": "{{MODIFIED_PRET_ADDRESS}}",
+      "functionName": "getAssetTypeThreshold",
+      "parameters": [
+        {
+          "name": "assetTypeId", 
+          "type": "uint256",
+          "description": "Asset type constant"
+        },
+        {
+          "name": "amount",
+          "type": "uint256",
+          "description": "Investment amount"
+        }
+      ],
+      "returnType": "uint256",
+      "conditions": [
+        {
+          "operator": ">",
+          "value": "1000"
+        }
+      ],
+      "enabled": true
+    },
+    {
+      "id": "RULE_13",
+      "name": "PYUSD Peg Stability Check",
+      "description": "Verify PYUSD maintains stable peg",
+      "contractAddress": "{{MODIFIED_PRET_ADDRESS}}",
+      "functionName": "checkPYUSDPegStability",
+      "parameters": [
+        {
+          "name": "priceData",
+          "type": "uint256",
+          "description": "Current PYUSD price data (6 decimals)"
+        }
+      ],
+      "returnType": "bool",
+      "conditions": [
+        {
+          "operator": "==",
+          "value": "true"
+        }
+      ],
+      "enabled": true
+    },
+    {
+      "id": "RULE_14",
+      "name": "Cross-Border PYUSD Validation",
+      "description": "Validate cross-border PYUSD transfers using country codes",
+      "contractAddress": "{{MODIFIED_PRET_ADDRESS}}",
+      "functionName": "validateCrossBorderPYUSD",
+      "parameters": [
+        {
+          "name": "fromCountryCode",
+          "type": "uint256", 
+          "description": "ISO 3166-1 numeric country code (e.g. 840=US)"
+        },
+        {
+          "name": "toCountryCode",
+          "type": "uint256",
+          "description": "ISO 3166-1 numeric country code"
+        },
+        {
+          "name": "amount",
+          "type": "uint256",
+          "description": "Transfer amount (6 decimals)"
+        }
+      ],
+      "returnType": "bool",
+      "conditions": [
+        {
+          "operator": "==",
+          "value": "true"
+        }
+      ],
+      "enabled": true
+    }
+  ],
+  "metadata": {
+    "createdAt": "2025-06-23",
+    "blockchain": "ethereum",
+    "compliance": ["KYC", "AML", "OFAC", "GLEIF", "BPMN", "ACTUS", "DCSA"],
+    "converted": true,
+    "originalStringParams": 8,
+    "originalBytes32Params": 1,
+    "totalRulesConverted": 9
+  }
+}

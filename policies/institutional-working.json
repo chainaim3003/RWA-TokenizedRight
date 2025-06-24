@@ -1,0 +1,37 @@
+{
+  "Policy": "Institutional RWA Working Policy", 
+  "PolicyType": "open",
+  "ForeignCalls": [
+    {
+      "name": "getKycLevel",
+      "address": "0xa85233C63b9Ee964Add6F2cffe00Fd84eb32338f",
+      "function": "getKycLevel(address)",
+      "returnType": "uint256",
+      "valuesToPass": "0"
+    },
+    {
+      "name": "isOFACSanctioned",
+      "address": "0xa85233C63b9Ee964Add6F2cffe00Fd84eb32338f",
+      "function": "isOFACSanctioned(address)",
+      "returnType": "bool",
+      "valuesToPass": "0"
+    }
+  ],
+  "Trackers": [],
+  "Rules": [
+    {
+      "condition": "FC:getKycLevel >= 3",
+      "positiveEffects": [],
+      "negativeEffects": ["revert(\"RULE_01: Enhanced KYC verification failed\")"],
+      "callingFunction": "mintInstitutionalAsset(address recipient, uint256 amount, uint256 principalAmount, string assetType, string lei, string corporateName)",
+      "encodedValues": "address recipient, uint256 amount, uint256 principalAmount, string assetType, string lei, string corporateName"
+    },
+    {
+      "condition": "FC:isOFACSanctioned == false",
+      "positiveEffects": [],
+      "negativeEffects": ["revert(\"RULE_02: Enhanced OFAC check failed\")"],
+      "callingFunction": "mintInstitutionalAsset(address recipient, uint256 amount, uint256 principalAmount, string assetType, string lei, string corporateName)",
+      "encodedValues": "address recipient, uint256 amount, uint256 principalAmount, string assetType, string lei, string corporateName"
+    }
+  ]
+}

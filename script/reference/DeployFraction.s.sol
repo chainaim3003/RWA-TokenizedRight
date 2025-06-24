@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.24;
 
-import {Script} from "lib/forge-std/src/Script.sol";
+import {Script, console} from "forge-std/Script.sol";
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
-import {Fraction} from "../src/reference/Fraction.sol";
+import {Fraction} from "../../src/reference/Fraction.sol";
 
 /**
  * @title Deploy Reference Fraction Contract
@@ -15,7 +15,7 @@ contract DeployFraction is Script {
         IERC20 fractalToken = IERC20(vm.envAddress("FRACTAL_TOKEN"));
         address freAddress = vm.envAddress("RULES_ENGINE_ADDRESS");
 
-        console.log("📋 Deploying reference Fraction contract...");
+        console.log("Deploying reference Fraction contract...");
         console.log("Owner:", owner);
         console.log("Rules Engine:", freAddress);
 
@@ -34,7 +34,7 @@ contract DeployFraction is Script {
         
         vm.stopBroadcast();
         
-        console.log("✅ Reference Fraction deployed at:", address(fraction));
-        console.log("🎯 Use this for testing basic Forte functionality");
+        console.log("Reference Fraction deployed at:", address(fraction));
+        console.log("Use this for testing basic Forte functionality");
     }
 }
